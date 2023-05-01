@@ -2,6 +2,10 @@ echo "Starting Codex..."
 
 args=""
 
+## local ip as NAT?
+do_nat=$(hostname -i)
+echo "got nat:$do_nat"
+
 # Required arguments
 if [ -n "$LISTEN_ADDRS" ]; then
   echo "Listen address: $LISTEN_ADDRS"
@@ -40,10 +44,10 @@ if [ -n "$METRICS_ADDR" ] && [ -n "$METRICS_PORT" ]; then
 fi
 
 # NAT
-if [ -n "$NAT_IP" ]; then
-  echo "NAT: $NAT_IP"
-  args="$args --nat=$NAT_IP"
-fi
+# if [ -n "$NAT_IP" ]; then
+echo "NAT: $do_nat"
+args="$args --nat=$do_nat"
+# fi
 
 # Discovery IP
 if [ -n "$DISC_IP" ]; then
@@ -108,15 +112,20 @@ fi
 # Ethereum persistence
 if [ -n "$ETH_PROVIDER" ] && [ -n "$ETH_ACCOUNT" ] && [ -n "$ETH_MARKETPLACE_ADDRESS" ]; then
     echo "Persistence enabled"
-    args="$args --persistence=true"
+    args="$args --persistence"
     args="$args --eth-provider=$ETH_PROVIDER"
     args="$args --eth-account=$ETH_ACCOUNT"
     # args="$args --validator"
 
     # Remove this as soon as CLI option is available:
-    echo "{\"contracts\": { \"Marketplace\": { \"address\": \""$ACCOUNTSTR"\" } } }" > /root/marketplace_address.json
+    echo "{\"contracts\": { \"Marketplace\": { \"address\": \""$ETH_MARKETPLACE_ADDRESS"\" } } }" > /root/marketplace_address.json
     args="$args --eth-deployment=/root/marketplace_address.json"
+
+    if [ -n "$SIMULATE_PROOF_FAILURES" ]; then
+      echo "Simulate proof failures: $SIMULATE_PROOF_FAILURES"
+      args="$args --simulate-proof-failures=$SIMULATE_PROOF_FAILURES"
+    fi
 fi
 
-echo "./root/codex $args"
-sh -c "/root/codex $args"
+echo "./codex $args"
+/bin/bash -l -c "./codex $args"

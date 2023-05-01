@@ -4,6 +4,7 @@ import pkg/ethers
 import pkg/ethers/testing
 import pkg/upraises
 import pkg/questionable
+import pkg/chronicles
 import ../market
 import ./marketplace
 
@@ -38,6 +39,9 @@ proc approveFunds(market: OnChainMarket, amount: UInt256) {.async.} =
 
 method getSigner*(market: OnChainMarket): Future[Address] {.async.} =
   return await market.signer.getAddress()
+
+method isMainnet*(market: OnChainMarket): Future[bool] {.async.} =
+  return (await market.signer.provider.getChainId()) == 1.u256
 
 method periodicity*(market: OnChainMarket): Future[Periodicity] {.async.} =
   let config = await market.contract.config()
