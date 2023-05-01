@@ -24,12 +24,6 @@ jobs:
             type=semver,pattern={{version}}
             type=sha
 
-      - name: Show tags
-        run: echo "${{ steps.meta.outputs.tags }}"
-
-      - name: Show labels
-        run: echo "${{ steps.meta.outputs.labels }}"
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -51,15 +45,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Show image Id
-        run: echo "${{ steps.build.outputs.imageid }}"
-
-      - name: Show images
-        run: docker image ls
-
-      - name: Show env
-        run: echo "${{ env.DOCKER_METADATA_OUTPUT_TAGS }}"
-
       # Slim it!
       - name: Minify docker image
         uses: kitabisa/docker-slim-action@v1
@@ -73,7 +58,7 @@ jobs:
         run: echo "${{ steps.slim.outputs.report }}"
 
       # Push to the docker registry
-      - name: Build and push
+      - name: Push to Docker registry
         if: github.event_name != 'pull_request'
         id: push
         uses: docker/build-push-action@v4
