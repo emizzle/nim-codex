@@ -48,13 +48,15 @@ jobs:
         run: echo "${{ steps.build.outputs.imageid }}"
       - name: Show images
         run: docker image ls
+      - name: Show env
+        run: echo "${{ env.DOCKER_METADATA_OUTPUT_TAGS }}"
       # Slim it!
       - name: Minify docker image
         uses: kitabisa/docker-slim-action@v1
         env:
           DSLIM_HTTP_PROBE: false
         with:
-          target: ${{ steps.build.outputs.imageid }}
+          target: ${{ env.DOCKER_METADATA_OUTPUT_TAGS }}
           overwrite: true
       - name: Show slim report
         run: echo "${{ steps.slim.outputs.report }}"
