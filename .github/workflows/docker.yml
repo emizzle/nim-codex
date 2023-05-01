@@ -10,7 +10,7 @@ on:
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,12 +18,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: thatbenbierens/nim-codex
+          images: emizzle/nim-codex-arm64
           tags: |
             type=semver,pattern={{version}}
             type=sha
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to Docker Hub
