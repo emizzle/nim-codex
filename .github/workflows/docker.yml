@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
-        id: build-and-push
+        id: build
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -46,9 +46,9 @@ jobs:
         env:
           DSLIM_HTTP_PROBE: false
         with:
-          target: ${{ steps.build-and-push.outputs.imageid }}
+          target: ${{ steps.build.outputs.imageid }}
           tag: ${{ steps.meta.outputs.tags }}
       # Push to the docker registry
       - name: Push image to docker registry
-        run: docker image push "${{ steps.meta.outputs.labels }}:${{ steps.meta.outputs.tags }}"
+        run: docker image push "${{ steps.meta.outputs.tags }}"
         if: github.event_name != 'pull_request'
