@@ -22,11 +22,10 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=sha
-      - name: Show tags
-        run: echo "${{ steps.meta.outputs.tags }}"
-      - name: Show labels
-        run: echo "${{ steps.meta.outputs.labels }}"
-
+      # - name: Show tags
+      #   run: echo "${{ steps.meta.outputs.tags }}"
+      # - name: Show labels
+      #   run: echo "${{ steps.meta.outputs.labels }}"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to Docker Hub
@@ -35,24 +34,26 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # - name: Build and push
-      #   id: build
-      #   uses: docker/build-push-action@v4
-      #   with:
-      #     context: .
-      #     file: docker/codex.Dockerfile
-      #     platforms: linux/arm64
-      #     push: false
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: docker/codex.Dockerfile
+          platforms: linux/arm64
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
       # Slim it!
       - name: Minify docker image
         uses: kitabisa/docker-slim-action@v1
         env:
           DSLIM_HTTP_PROBE: false
         with:
-          target: ${{ steps.build.outputs.imageid }}
-          tag: ${{ steps.meta.outputs.tags }}
+          target: ${{ steps.meta.outputs.tags }}
+          tag: "slim"
+      - name: Show slim report
+        run: echo "${{ steps.slim.outputs.report }}"
       # Push to the docker registry
       - name: Push image to docker registry
         run: docker image push "${{ steps.meta.outputs.tags }}"
