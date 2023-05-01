@@ -6,8 +6,8 @@ RUN echo 'export PATH="${NIMBLE_DIR}/bin:${PATH}"' >> "${HOME}/.bash_env"
 WORKDIR /src
 COPY . .
 RUN make clean
-RUN make -j4 update
-RUN make -j4 NIM_PARAMS="-d:disableMarchNative"
+RUN make -j32 update
+RUN make -j32 NIM_PARAMS="-d:disableMarchNative"
 
 FROM ubuntu:lunar-20230415
 WORKDIR /root
